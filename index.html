@@ -2,103 +2,104 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistente de Gestión de Pagos</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-        .container {
+        
+        .chat-container {
             width: 100%;
             max-width: 900px;
+            height: 90vh;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .header p { font-size: 14px; opacity: 0.9; }
-        
-        .config-section {
-            padding: 30px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        .config-section.hidden { display: none; }
-        .config-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .btn:hover { transform: translateY(-2px); }
-        .btn:active { transform: translateY(0); }
-        
-        .chat-container {
-            height: 500px;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .chat-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .connection-status {
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .connection-status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .connection-status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             background: #f5f7fb;
         }
+        
         .message {
             margin-bottom: 15px;
             display: flex;
-            animation: fadeIn 0.3s;
+            animation: fadeIn 0.3s ease-in;
         }
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .message.user { justify-content: flex-end; }
-        .message.bot { justify-content: flex-start; }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message.bot {
+            justify-content: flex-start;
+        }
+        
         .message-content {
             max-width: 75%;
             padding: 14px 18px;
@@ -108,27 +109,115 @@
             font-size: 14px;
             line-height: 1.6;
         }
+        
         .message.user .message-content {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-bottom-right-radius: 4px;
         }
+        
         .message.bot .message-content {
             background: white;
             color: #333;
             border-bottom-left-radius: 4px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        
+        .sheets-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .sheets-link:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 12px 18px;
+            background: white;
+            border-radius: 18px;
+            width: fit-content;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .typing-indicator.active {
+            display: block;
+        }
+        
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .quick-actions {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+        
+        .quick-btn {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
         .chat-input-container {
             padding: 20px;
             background: white;
             border-top: 1px solid #e0e0e0;
         }
+        
         .chat-input-wrapper {
             display: flex;
             gap: 10px;
             align-items: center;
         }
+        
         .chat-input {
             flex: 1;
             padding: 12px 18px;
@@ -136,8 +225,19 @@
             border-radius: 25px;
             font-size: 14px;
             outline: none;
+            transition: border-color 0.3s;
         }
-        .chat-input:focus { border-color: #667eea; }
+        
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+        
+        .chat-input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+            color: #999;
+        }
+        
         .send-btn {
             width: 50px;
             height: 50px;
@@ -147,182 +247,169 @@
             color: white;
             font-size: 20px;
             cursor: pointer;
+            transition: transform 0.2s;
         }
-        .alert {
-            padding: 15px;
-            margin: 20px;
+        
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+        
+        .code-example {
+            background: #f5f5f5;
+            padding: 8px 12px;
             border-radius: 8px;
-            font-size: 14px;
-        }
-        .alert-error {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-        }
-        .alert-success {
-            background: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
-        }
-        .info-box {
-            background: #f0f4ff;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        .logout-btn {
-            background: #f44336;
-            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 5px 0;
+            color: #d63384;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <div class="chat-container">
+        <div class="chat-header">
             <h1>🤖 Asistente de Gestión de Pagos</h1>
             <p>Gestiona tus facturas y pagos de forma inteligente</p>
         </div>
-
-        <!-- SECCIÓN DE CONFIGURACIÓN INICIAL -->
-        <div class="config-section" id="configSection">
-            <div class="config-title">⚙️ Configuración Inicial</div>
-            
-            <div class="info-box">
-                <strong>📌 Antes de empezar necesitas:</strong><br>
-                1️⃣ URL de tu backend (Flask desplegado en Render/Railway)<br>
-                2️⃣ Tu API Key de OpenRouter<br>
-                3️⃣ ID de tu Google Sheet<br>
-                4️⃣ Credenciales de Google (credentials.json)
-            </div>
-
-            <div class="form-group">
-                <label>🌐 URL del Backend (ej: https://tu-app.onrender.com)</label>
-                <input type="text" id="backendUrl" placeholder="https://tu-backend.onrender.com">
-            </div>
-
-            <div class="form-group">
-                <label>🔑 OpenRouter API Key</label>
-                <input type="password" id="apiKey" placeholder="sk-or-v1-...">
-            </div>
-
-            <div class="form-group">
-                <label>📊 Google Sheets ID</label>
-                <input type="text" id="sheetsId" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
-            </div>
-
-            <button class="btn" onclick="saveConfig()">💾 Guardar y Continuar</button>
+        
+        <div id="connectionStatus" class="connection-status">
+            ⏳ Conectando al servidor...
         </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-content">¡Hola! 👋 Soy tu asistente de pagos.
 
-        <!-- SECCIÓN DE CHAT (oculta inicialmente) -->
-        <div class="chat-container" id="chatContainer" style="display:none;">
-            <div class="chat-messages" id="chatMessages">
-                <div class="message bot">
-                    <div class="message-content">
-                        ¡Hola! 👋 Soy tu asistente de pagos.<br><br>
-                        Puedo ayudarte a:<br>
-                        📝 Planificar facturas en cuotas<br>
-                        💰 Registrar pagos y abonos<br>
-                        🔍 Consultar información de facturas<br>
-                        💳 Ver tus deudas pendientes<br><br>
-                        ¿En qué puedo ayudarte hoy?
-                    </div>
-                </div>
+Puedo ayudarte a:
+📝 Planificar facturas en cuotas
+💰 Registrar pagos y abonos
+🔍 Consultar información de facturas
+💳 Ver tus deudas pendientes
+
+Escribe "ayuda" para ver ejemplos de comandos.
+
+¿En qué puedo ayudarte hoy?</div>
             </div>
             
-            <div class="chat-input-container">
-                <div style="text-align: center; margin-bottom: 10px;">
-                    <button class="btn logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
-                </div>
-                <div class="chat-input-wrapper">
-                    <input type="text" class="chat-input" id="userInput" 
-                           placeholder="Escribe tu mensaje..." 
-                           onkeypress="handleKeyPress(event)">
-                    <button class="send-btn" onclick="sendMessage()">➤</button>
-                </div>
+            <div class="typing-indicator" id="typingIndicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="sendQuickMessage('Ver deudas pendientes')">💳 Ver deudas</button>
+            <button class="quick-btn" onclick="sendQuickMessage('Ver Sheets')">📊 Sheets & Calendar</button>
+            <button class="quick-btn" onclick="sendQuickMessage('ayuda')">❓ Ayuda</button>
+        </div>
+        
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" id="userInput" 
+                    placeholder="Escribe tu mensaje..." 
+                    onkeypress="handleKeyPress(event)">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuración guardada en localStorage
-        let config = {
-            backendUrl: '',
-            apiKey: '',
-            sheetsId: ''
-        };
+        // 🔥 CONFIGURA AQUÍ LA URL DE TU BACKEND
+        // Cambia esta URL por la que te dé Render.com
+        const API_URL = 'https://administrador-de-facturas-backend.onrender.com';
+        
+        // Elementos del DOM
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const sendBtn = document.getElementById('sendBtn');
+        const connectionStatus = document.getElementById('connectionStatus');
 
-        // Cargar configuración al iniciar
-        window.addEventListener('load', () => {
-            const saved = localStorage.getItem('paymentAssistantConfig');
-            if (saved) {
-                config = JSON.parse(saved);
-                document.getElementById('configSection').style.display = 'none';
-                document.getElementById('chatContainer').style.display = 'flex';
-                showMessage('✅ Configuración cargada. ¡Listo para usar!', false);
-            }
-        });
-
-        function saveConfig() {
-            const backendUrl = document.getElementById('backendUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const sheetsId = document.getElementById('sheetsId').value.trim();
-
-            if (!backendUrl || !apiKey || !sheetsId) {
-                alert('❌ Por favor completa todos los campos');
-                return;
-            }
-
-            config = { backendUrl, apiKey, sheetsId };
-            localStorage.setItem('paymentAssistantConfig', JSON.stringify(config));
-
-            document.getElementById('configSection').style.display = 'none';
-            document.getElementById('chatContainer').style.display = 'flex';
-            
-            showMessage('✅ Configuración guardada exitosamente', false);
-        }
-
-        function logout() {
-            if (confirm('¿Seguro que deseas cerrar sesión? Se borrará tu configuración.')) {
-                localStorage.removeItem('paymentAssistantConfig');
-                location.reload();
-            }
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const message = input.value.trim();
-            
-            if (!message) return;
-
-            showMessage(message, true);
-            input.value = '';
-
+        // Función para enviar mensaje al backend
+        async function sendMessageToBackend(message) {
             try {
-                const response = await fetch(`${config.backendUrl}/api/chat`, {
+                const response = await fetch(`${API_URL}/api/chat`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-API-Key': config.apiKey,
-                        'X-Sheets-ID': config.sheetsId
                     },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({message: message})
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const data = await response.json();
                 
-                if (data.success) {
-                    showMessage(data.message, false, data.html);
-                } else {
-                    showMessage('❌ ' + data.message, false);
-                }
+                return {
+                    type: data.success ? 'success' : 'error',
+                    message: data.message,
+                    html: data.html || null
+                };
             } catch (error) {
-                showMessage('❌ Error de conexión con el servidor', false);
+                console.error('Error:', error);
+                updateConnectionStatus('error');
+                return {
+                    type: 'error',
+                    message: `❌ Error de conexión: ${error.message}`
+                };
             }
         }
 
-        function showMessage(text, isUser, html = null) {
-            const messagesDiv = document.getElementById('chatMessages');
+        // Actualizar estado de conexión
+        function updateConnectionStatus(status) {
+            if (status === 'connected') {
+                connectionStatus.className = 'connection-status connected';
+                connectionStatus.textContent = '✅ Conectado al servidor';
+            } else if (status === 'error') {
+                connectionStatus.className = 'connection-status error';
+                connectionStatus.textContent = '❌ Error de conexión';
+            } else {
+                connectionStatus.className = 'connection-status';
+                connectionStatus.textContent = '⏳ Conectando...';
+            }
+        }
+
+        // Verificar estado del servidor
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_URL}/api/status`);
+                const data = await response.json();
+                
+                if (data.status === 'online') {
+                    updateConnectionStatus('connected');
+                }
+            } catch (error) {
+                updateConnectionStatus('error');
+            }
+        }
+
+        // Agregar mensaje al chat
+        function addMessage(message, isUser = false, html = null) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
             
@@ -332,17 +419,90 @@
             if (html && !isUser) {
                 contentDiv.innerHTML = html;
             } else {
-                contentDiv.textContent = text;
+                contentDiv.textContent = message;
             }
             
             messageDiv.appendChild(contentDiv);
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            chatMessages.insertBefore(messageDiv, typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            return messageDiv;
         }
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') sendMessage();
+        // Mostrar indicador de escritura
+        function showTypingIndicator() {
+            typingIndicator.classList.add('active');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+
+        // Ocultar indicador de escritura
+        function hideTypingIndicator() {
+            typingIndicator.classList.remove('active');
+        }
+
+        // Enviar mensaje
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (!message) return;
+
+            // Mostrar mensaje del usuario
+            addMessage(message, true);
+            userInput.value = '';
+            
+            // Deshabilitar controles
+            sendBtn.disabled = true;
+            userInput.disabled = true;
+            userInput.placeholder = '⏳ Procesando, espera...';
+            
+            // Mostrar indicador de escritura
+            showTypingIndicator();
+
+            try {
+                // Enviar al backend
+                const response = await sendMessageToBackend(message);
+                
+                // Ocultar indicador
+                hideTypingIndicator();
+                
+                // Mostrar respuesta
+                addMessage(response.message, false, response.html);
+                
+                // Actualizar estado de conexión
+                if (response.type !== 'error') {
+                    updateConnectionStatus('connected');
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('❌ Error de conexión.', false);
+                updateConnectionStatus('error');
+            } finally {
+                // Rehabilitar controles
+                sendBtn.disabled = false;
+                userInput.disabled = false;
+                userInput.placeholder = 'Escribe tu mensaje...';
+                userInput.focus();
+            }
+        }
+
+        // Enviar mensaje rápido
+        function sendQuickMessage(message) {
+            userInput.value = message;
+            sendMessage();
+        }
+
+        // Manejar Enter
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !sendBtn.disabled) {
+                sendMessage();
+            }
+        }
+
+        // Inicializar al cargar la página
+        window.addEventListener('load', () => {
+            userInput.focus();
+            checkServerStatus();
+        });
     </script>
 </body>
 </html>
