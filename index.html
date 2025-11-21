@@ -36,7 +36,6 @@
         .header h1 { font-size: 28px; margin-bottom: 10px; }
         .header p { font-size: 14px; opacity: 0.9; }
         
-        /* LOGIN SCREEN */
         .login-container {
             padding: 50px 30px;
             text-align: center;
@@ -82,7 +81,6 @@
             height: 20px;
         }
         
-        /* CHAT CONTAINER */
         .chat-container {
             display: none;
             height: 600px;
@@ -246,6 +244,32 @@
             padding: 50px;
             color: #666;
         }
+        
+        .error-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+            color: #856404;
+        }
+
+        .sheets-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .sheets-link:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -324,6 +348,8 @@ Puedo ayudarte a:
         // 🔥 CONFIGURA AQUÍ LA URL DE TU BACKEND
         const API_URL = 'https://administrador-de-facturas-backend.onrender.com';
         
+        // Variable global para el token de sesión
+        let sessionToken = null;
         let userId = null;
 
         // Elementos del DOM
@@ -335,42 +361,83 @@ Puedo ayudarte a:
         const sendBtn = document.getElementById('sendBtn');
         const typingIndicator = document.getElementById('typingIndicator');
         const userIdDisplay = document.getElementById('userIdDisplay');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // 🔥 FUNCIONES DE GESTIÓN DE TOKEN
+        function saveToken(token) {
+            sessionToken = token;
+            localStorage.setItem('auth_token', token);
+            console.log('✅ Token guardado');
+        }
+
+        function loadToken() {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                sessionToken = token;
+                console.log('✅ Token cargado desde localStorage');
+                return true;
+            }
+            return false;
+        }
+
+        function clearToken() {
+            sessionToken = null;
+            localStorage.removeItem('auth_token');
+            console.log('🗑️ Token eliminado');
+        }
 
         // Verificar autenticación al cargar
         async function checkAuth() {
+            console.log('🔍 Verificando autenticación...');
+            
+            // Primero intentar cargar token del localStorage
+            if (!loadToken()) {
+                console.log('❌ No hay token guardado');
+                showLogin();
+                return;
+            }
+
             try {
                 const response = await fetch(`${API_URL}/api/auth/status`, {
-                    credentials: 'include'
+                    headers: {
+                        'Authorization': `Bearer ${sessionToken}`
+                    }
                 });
                 
                 const data = await response.json();
                 
                 if (data.authenticated) {
                     userId = data.user_id;
+                    console.log('✅ Usuario autenticado:', userId);
                     showChat();
                 } else {
+                    console.log('❌ Token inválido o expirado');
+                    clearToken();
                     showLogin();
                 }
             } catch (error) {
-                console.error('Error verificando autenticación:', error);
+                console.error('❌ Error verificando autenticación:', error);
+                updateConnectionStatus('error');
                 showLogin();
             }
         }
 
         // Iniciar login
         async function initiateLogin() {
+            console.log('🔐 Iniciando login...');
             try {
-                const response = await fetch(`${API_URL}/api/auth/login`, {
-                    credentials: 'include'
-                });
-                
+                const response = await fetch(`${API_URL}/api/auth/login`);
                 const data = await response.json();
                 
                 if (data.auth_url) {
+                    console.log('↗️ Redirigiendo a Google OAuth...');
                     // Redirigir a Google OAuth
                     window.location.href = data.auth_url;
+                } else {
+                    alert('Error al iniciar sesión: No se recibió URL de autorización');
                 }
             } catch (error) {
+                console.error('❌ Error al iniciar sesión:', error);
                 alert('Error al iniciar sesión: ' + error.message);
             }
         }
@@ -381,13 +448,19 @@ Puedo ayudarte a:
                 try {
                     await fetch(`${API_URL}/api/auth/logout`, {
                         method: 'POST',
-                        credentials: 'include'
+                        headers: {
+                            'Authorization': `Bearer ${sessionToken}`
+                        }
                     });
                     
+                    clearToken();
                     userId = null;
                     showLogin();
                 } catch (error) {
-                    alert('Error al cerrar sesión');
+                    console.error('Error al cerrar sesión:', error);
+                    // Cerrar sesión localmente de todas formas
+                    clearToken();
+                    showLogin();
                 }
             }
         }
@@ -404,7 +477,21 @@ Puedo ayudarte a:
             loginScreen.style.display = 'none';
             chatContainer.classList.add('active');
             userIdDisplay.textContent = `Usuario: ${userId ? userId.substring(0, 8) : 'Desconocido'}`;
+            updateConnectionStatus('connected');
             userInput.focus();
+        }
+
+        function updateConnectionStatus(status) {
+            if (status === 'connected') {
+                connectionStatus.className = 'connection-status connected';
+                connectionStatus.textContent = '✅ Conectado al servidor';
+            } else if (status === 'error') {
+                connectionStatus.className = 'connection-status error';
+                connectionStatus.textContent = '❌ Error de conexión';
+            } else {
+                connectionStatus.className = 'connection-status';
+                connectionStatus.textContent = '⏳ Conectando...';
+            }
         }
 
         // Enviar mensaje
@@ -421,8 +508,10 @@ Puedo ayudarte a:
             try {
                 const response = await fetch(`${API_URL}/api/chat`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionToken}`
+                    },
                     body: JSON.stringify({ message })
                 });
 
@@ -432,15 +521,19 @@ Puedo ayudarte a:
                 if (response.status === 401) {
                     // Token expirado
                     addMessage('⚠️ Tu sesión ha expirado. Por favor vuelve a iniciar sesión.', false);
+                    clearToken();
                     setTimeout(() => showLogin(), 2000);
                 } else if (data.success) {
                     addMessage(data.message, false, data.html);
+                    updateConnectionStatus('connected');
                 } else {
                     addMessage('❌ ' + data.message, false);
                 }
             } catch (error) {
+                console.error('❌ Error enviando mensaje:', error);
                 hideTypingIndicator();
                 addMessage('❌ Error de conexión con el servidor', false);
+                updateConnectionStatus('error');
             } finally {
                 sendBtn.disabled = false;
                 userInput.disabled = false;
@@ -482,16 +575,34 @@ Puedo ayudarte a:
             }
         }
 
-        // Verificar si viene de callback de OAuth
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('auth') === 'success') {
-            // Limpiar URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-            checkAuth();
-        } else {
-            // Verificar autenticación normal
-            checkAuth();
-        }
+        // 🔥 INICIO DE LA APLICACIÓN
+        window.addEventListener('load', () => {
+            console.log('🚀 Aplicación iniciada');
+            
+            // Verificar si viene de callback de OAuth
+            const urlParams = new URLSearchParams(window.location.search);
+            const authStatus = urlParams.get('auth');
+            const token = urlParams.get('token');
+            
+            if (authStatus === 'success' && token) {
+                console.log('✅ Callback de OAuth exitoso');
+                // Guardar token
+                saveToken(decodeURIComponent(token));
+                // Limpiar URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                // Verificar autenticación
+                checkAuth();
+            } else if (authStatus === 'error') {
+                console.log('❌ Error en OAuth callback');
+                const errorMsg = urlParams.get('message') || 'Error desconocido';
+                alert('Error de autenticación: ' + errorMsg);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showLogin();
+            } else {
+                // Verificar autenticación normal
+                checkAuth();
+            }
+        });
     </script>
 </body>
 </html>
