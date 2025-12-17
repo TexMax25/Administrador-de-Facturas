@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistente de Gestión de Pagos</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -16,43 +21,50 @@
             align-items: center;
             padding: 20px;
         }
-        
+
         .container {
             width: 100%;
             max-width: 900px;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        
-        .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .header p { font-size: 14px; opacity: 0.9; }
-        
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
         .login-container {
             padding: 50px 30px;
             text-align: center;
         }
-        
+
         .login-container h2 {
             font-size: 24px;
             color: #333;
             margin-bottom: 20px;
         }
-        
+
         .login-container p {
             color: #666;
             margin-bottom: 30px;
             line-height: 1.6;
         }
-        
+
         .google-login-btn {
             display: inline-flex;
             align-items: center;
@@ -68,27 +80,29 @@
             transition: all 0.3s;
             text-decoration: none;
         }
-        
+
         .google-login-btn:hover {
             background: #f5f5f5;
             border-color: #667eea;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .google-icon {
             width: 20px;
             height: 20px;
         }
-        
+
         .chat-container {
             display: none;
             height: 600px;
             flex-direction: column;
         }
-        
-        .chat-container.active { display: flex; }
-        
+
+        .chat-container.active {
+            display: flex;
+        }
+
         .connection-status {
             padding: 10px;
             text-align: center;
@@ -96,38 +110,50 @@
             background: #fff3cd;
             color: #856404;
         }
-        
+
         .connection-status.connected {
             background: #d4edda;
             color: #155724;
         }
-        
+
         .connection-status.error {
             background: #f8d7da;
             color: #721c24;
         }
-        
+
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             background: #f5f7fb;
         }
-        
+
         .message {
             margin-bottom: 15px;
             display: flex;
             animation: fadeIn 0.3s;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .message.user { justify-content: flex-end; }
-        .message.bot { justify-content: flex-start; }
-        
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
         .message-content {
             max-width: 75%;
             padding: 14px 18px;
@@ -137,31 +163,43 @@
             font-size: 14px;
             line-height: 1.6;
         }
-        
+
         .message.user .message-content {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-bottom-right-radius: 4px;
         }
-        
+
         .message.bot .message-content {
             background: white;
             color: #333;
             border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        
+
+        .code-example {
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 5px 0;
+            border-left: 3px solid #667eea;
+        }
+
         .typing-indicator {
             display: none;
             padding: 12px 18px;
             background: white;
             border-radius: 18px;
             width: fit-content;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        
-        .typing-indicator.active { display: block; }
-        
+
+        .typing-indicator.active {
+            display: block;
+        }
+
         .typing-indicator span {
             height: 8px;
             width: 8px;
@@ -171,21 +209,34 @@
             margin-right: 5px;
             animation: typing 1.4s infinite;
         }
-        
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
         }
-        
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
         .chat-input-container {
             padding: 20px;
             background: white;
             border-top: 1px solid #e0e0e0;
         }
-        
+
         .user-info {
             display: flex;
             justify-content: space-between;
@@ -194,7 +245,7 @@
             font-size: 12px;
             color: #666;
         }
-        
+
         .logout-btn {
             background: #f44336;
             color: white;
@@ -204,15 +255,17 @@
             cursor: pointer;
             font-size: 12px;
         }
-        
-        .logout-btn:hover { background: #d32f2f; }
-        
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
         .chat-input-wrapper {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-        
+
         .chat-input {
             flex: 1;
             padding: 12px 18px;
@@ -221,9 +274,11 @@
             font-size: 14px;
             outline: none;
         }
-        
-        .chat-input:focus { border-color: #667eea; }
-        
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
         .send-btn {
             width: 50px;
             height: 50px;
@@ -235,16 +290,22 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        
-        .send-btn:hover { transform: scale(1.1); }
-        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .loading {
             text-align: center;
             padding: 50px;
             color: #666;
         }
-        
+
         .error-message {
             background: #fff3cd;
             border: 1px solid #ffc107;
@@ -272,11 +333,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>🤖 Asistente de Gestión de Pagos</h1>
-            <p>Gestiona tus facturas y pagos de forma inteligente</p>
+            <p>Gestiona tus facturas con fechas personalizadas</p>
         </div>
 
         <!-- LOADING -->
@@ -293,10 +355,14 @@
             </p>
             <button class="google-login-btn" onclick="initiateLogin()">
                 <svg class="google-icon" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    <path fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
                 Iniciar sesión con Google
             </button>
@@ -310,34 +376,43 @@
             <div id="connectionStatus" class="connection-status">
                 ✅ Conectado
             </div>
-            
+
             <div class="chat-messages" id="chatMessages">
                 <div class="message bot">
                     <div class="message-content">¡Hola! 👋 Soy tu asistente de pagos.
 
-Puedo ayudarte a:
-📝 Planificar facturas en cuotas
-💰 Registrar pagos y abonos
-🔍 Consultar información de facturas
-💳 Ver tus deudas pendientes
+                        Puedo ayudarte a:
+                        📝 Planificar facturas con fecha personalizada
+                        💰 Registrar pagos y abonos
+                        🔍 Consultar información de facturas
+                        💳 Ver tus deudas pendientes
 
-¿En qué puedo ayudarte hoy?</div>
+                        <strong>Ejemplos de uso:</strong>
+
+                        <div class="code-example">📅 Por días: "Factura 12345 por $150000 vence en 15 días"</div>
+                        <div class="code-example">📅 Por fecha: "Factura 12345 por $150000 vence el 2025-12-25"</div>
+                        <div class="code-example">💰 Pagar: "Pagué $50000 de la factura 12345"</div>
+                        <div class="code-example">🔍 Consultar: "Ver factura 12345"</div>
+
+                        💡 <strong>Nota:</strong> El sistema evita saturar fechas (máximo 2 pagos por día)
+
+                        ¿En qué puedo ayudarte hoy?
+                    </div>
                 </div>
-                
+
                 <div class="typing-indicator" id="typingIndicator">
                     <span></span><span></span><span></span>
                 </div>
             </div>
-            
+
             <div class="chat-input-container">
                 <div class="user-info">
                     <span id="userIdDisplay">Usuario: Cargando...</span>
                     <button class="logout-btn" onclick="logout()">🚪 Cerrar sesión</button>
                 </div>
                 <div class="chat-input-wrapper">
-                    <input type="text" class="chat-input" id="userInput" 
-                        placeholder="Escribe tu mensaje..." 
-                        onkeypress="handleKeyPress(event)">
+                    <input type="text" class="chat-input" id="userInput"
+                        placeholder="Ej: Factura 12345 por $150000 vence en 15 días" onkeypress="handleKeyPress(event)">
                     <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
                 </div>
             </div>
@@ -347,7 +422,7 @@ Puedo ayudarte a:
     <script>
         // 🔥 CONFIGURA AQUÍ LA URL DE TU BACKEND
         const API_URL = 'https://administrador-de-facturas-backend.onrender.com';
-        
+
         // Variable global para el token de sesión
         let sessionToken = null;
         let userId = null;
@@ -389,7 +464,7 @@ Puedo ayudarte a:
         // Verificar autenticación al cargar
         async function checkAuth() {
             console.log('🔍 Verificando autenticación...');
-            
+
             // Primero intentar cargar token del localStorage
             if (!loadToken()) {
                 console.log('❌ No hay token guardado');
@@ -403,9 +478,9 @@ Puedo ayudarte a:
                         'Authorization': `Bearer ${sessionToken}`
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.authenticated) {
                     userId = data.user_id;
                     console.log('✅ Usuario autenticado:', userId);
@@ -428,7 +503,7 @@ Puedo ayudarte a:
             try {
                 const response = await fetch(`${API_URL}/api/auth/login`);
                 const data = await response.json();
-                
+
                 if (data.auth_url) {
                     console.log('↗️ Redirigiendo a Google OAuth...');
                     // Redirigir a Google OAuth
@@ -452,7 +527,7 @@ Puedo ayudarte a:
                             'Authorization': `Bearer ${sessionToken}`
                         }
                     });
-                    
+
                     clearToken();
                     userId = null;
                     showLogin();
@@ -517,7 +592,7 @@ Puedo ayudarte a:
 
                 const data = await response.json();
                 hideTypingIndicator();
-                
+
                 if (response.status === 401) {
                     // Token expirado
                     addMessage('⚠️ Tu sesión ha expirado. Por favor vuelve a iniciar sesión.', false);
@@ -545,16 +620,16 @@ Puedo ayudarte a:
         function addMessage(text, isUser, html = null) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
-            
+
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            
+
             if (html && !isUser) {
                 contentDiv.innerHTML = html;
             } else {
                 contentDiv.textContent = text;
             }
-            
+
             messageDiv.appendChild(contentDiv);
             chatMessages.insertBefore(messageDiv, typingIndicator);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -578,12 +653,12 @@ Puedo ayudarte a:
         // 🔥 INICIO DE LA APLICACIÓN
         window.addEventListener('load', () => {
             console.log('🚀 Aplicación iniciada');
-            
+
             // Verificar si viene de callback de OAuth
             const urlParams = new URLSearchParams(window.location.search);
             const authStatus = urlParams.get('auth');
             const token = urlParams.get('token');
-            
+
             if (authStatus === 'success' && token) {
                 console.log('✅ Callback de OAuth exitoso');
                 // Guardar token
@@ -605,4 +680,5 @@ Puedo ayudarte a:
         });
     </script>
 </body>
+
 </html>
